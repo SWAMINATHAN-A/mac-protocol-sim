@@ -38,12 +38,15 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+st.divider()
 # Navigation Bar
-col1, col2, col3, col4, col5 = st.columns([3, 1, 1, 1, 1.5])
-
+col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 1])
 with col1:
     if st.button("Home", use_container_width=True):
         st.switch_page("Home.py")
+with col2:
+    if st.button("Download", use_container_width=True):
+        st.switch_page("pages/Download.py")
 
 with col3:
     if st.button("Help", use_container_width=True):
