@@ -11,7 +11,9 @@ st.set_page_config(
     layout="wide"
 )
 st.sidebar.page_link('Home.py', label='Home')
+#comment out CSMA/CA page like Pure_Aloha.py page for now, we'll display it later
 st.sidebar.page_link('pages/CSMA_CD.py', label='CSMA/CD')
+#st.sidebar.page_link('pages/Pure_Aloha.py', label='Pure Aloha')
 st.sidebar.page_link('pages/Slotted_Aloha.py', label='Slotted_Aloha')
 st.sidebar.markdown("---")
 st.divider()

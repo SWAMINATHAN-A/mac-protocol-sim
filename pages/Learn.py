@@ -48,7 +48,6 @@ with col1:
 with col2:
     if st.button("Download", use_container_width=True):
         st.switch_page("pages/Download.py")
-
 with col3:
     if st.button("Help", use_container_width=True):
         st.switch_page("pages/Help.py")
@@ -97,139 +96,144 @@ Still, **collisions can occur** due to **propagation delay**:
     """)
 
 with st.expander("CSMA/CD"):
+    st.markdown("## Carrier Sense Multiple Access with Collision Detection (CSMA/CD)")
+    st.markdown("*(Cited from: Kurose & Ross, “Computer Networking: A Top-Down Approach”, 6th Edition)*")
+    
     st.markdown("""
-    ## Carrier Sense Multiple Access with Collision Detection (CSMA/CD)  
-*(Cited from: Kurose & Ross, “Computer Networking: A Top-Down Approach”, 6th Edition)*
-
-CSMA/CD adds **collision detection** to CSMA.
-
-A transmitting node **listens to the channel**:
-- If it detects another transmission interfering → **abort immediately**
-- **Do not send the entire corrupted frame**
-- Then wait a **random backoff time** before retrying
-
----
-
-### CSMA/CD Algorithm (Adapter Behavior)
-1. Get a frame ready for transmission
-2. Sense channel
-   - If idle → start sending
-   - If busy → wait until idle
-3. While sending, **listen** for collision
-4. If **no collision** → success ✅
-5. If **collision detected** → stop + backoff → retry later
-
----
-
-### Binary Exponential Backoff
-If a frame has suffered **n collisions**:
-
-\[
-K \in \{0, 1, 2, \ldots, 2^n - 1\}
-\]
-
-Wait time:
-
-\[
-\text{Backoff} = K \times 512 \text{ bit times}
-\]
-
-- Small wait when few collisions
-- Longer wait as collisions increase
-
----
-
-### Efficiency Approximation
-
-\[
-\text{Efficiency} \approx \frac{1}{1 + 5 \cdot (d_{prop} / d_{trans})}
-\]
-
-Where:
-- \(d_{prop}\) = propagation delay
-- \(d_{trans}\) = frame transmission time
-
-✅ Efficiency increases when:
-- Propagation delay is small
-- Frame size is large
+        CSMA/CD adds **collision detection** to CSMA. A transmitting node **listens to the channel**:
+        * If it detects another transmission interfering → **abort immediately**
+        * **Do not send the entire corrupted frame**
+        * Then wait a **random backoff time** before retrying
+        ---
+        ### CSMA/CD Algorithm (Adapter Behavior)
+        1. Get a frame ready for transmission
+        2. Sense channel
+            * If idle → start sending
+            * If busy → wait until idle
+        3. While sending, **listen** for collision
+        4. If **no collision** → success ✅
+        5. If **collision detected** → stop + backoff → retry later
+        ---
+        ### Binary Exponential Backoff
+        If a frame has suffered **n collisions**:
+    """)
+    
+    st.latex(r'''
+        K \in \{0, 1, 2, \ldots, 2^n - 1\}
+    ''')
+    
+    st.markdown("Wait time:")
+    
+    st.latex(r'''
+        \text{Backoff} = K \times 512 \text{ bit times}
+    ''')
+    
+    st.markdown("""
+        * Small wait when few collisions
+        * Longer wait as collisions increase
+        ---
+        ### Efficiency Approximation
+    """)
+    
+    st.latex(r'''
+        \text{Efficiency} \approx \frac{1}{1 + 5 \cdot (d_{prop} / d_{trans})}
+    ''')
+    
+    st.markdown("""
+        Where:
+        * $d_{prop}$ = propagation delay (Using inline math in st.markdown is generally safe for simple variables)
+        * $d_{trans}$ = frame transmission time
+        
+        ✅ Efficiency increases when:
+        * Propagation delay is small
+        * Frame size is large
     """)
 
 with st.expander("Pure ALOHA"):
+    st.markdown("## Pure (Unslotted) ALOHA")
+    st.markdown("*(Cited from: Kurose & Ross, “Computer Networking: A Top-Down Approach”, 6th Edition)*")
+
     st.markdown("""
-    ## Pure (Unslotted) ALOHA  
-*(Cited from: Kurose & Ross, “Computer Networking: A Top-Down Approach”, 6th Edition)*
+        Pure ALOHA does not require synchronization.
 
-Pure ALOHA does not require synchronization.
+        ### Operation
+        * Whenever a frame arrives for transmission, the node sends it immediately
+        * If collision occurs:
+            * After completing the transmission, the node retransmits with probability **p**
+            * It may wait idle for one frame-time before another attempt
 
-### Operation
-- Whenever a frame arrives for transmission, the node sends it immediately
-- If collision occurs:
-  - After completing the transmission, the node retransmits with probability **p**
-  - It may wait idle for one frame-time before another attempt
+        ### Vulnerability Period
+        A collision can occur if any other node transmits within:
+    """)
 
-### Vulnerability Period
-A collision can occur if any other node transmits within:
+    # Use st.latex for the vulnerability window
+    st.latex(r'''
+        \text{vulnerability window} = 2 \text{ frame times}
+    ''')
 
-\[
-\text{vulnerability window} = 2 \text{ frame times}
-\]
+    st.markdown("Thus, probability of success:")
 
-Thus, probability of success:
+    # Use st.latex for the probability of success
+    # Note: I assumed the formula represents the probability of a *single* node's success in a frame time.
+    st.latex(r'''
+        p(1 - p)^{2(N-1)}
+    ''')
 
-\[
-p(1 - p)^{2(N-1)}
-\]
+    st.markdown("### Maximum Efficiency")
 
-### Maximum Efficiency
+    # Use st.latex for the maximum efficiency
+    st.latex(r'''
+        \frac{1}{2e} \approx 0.18
+    ''')
 
-\[
-\frac{1}{2e} \approx 0.18
-\]
-
-➡ Only **18%** of slots are successful  
-➡ Exactly **half** the efficiency of Slotted ALOHA  
-➡ Simplicity comes with lower performance
-""")
+    st.markdown("""
+        * ➡ Only **18%** of slots are successful
+        * ➡ Exactly **half** the efficiency of Slotted ALOHA
+        * ➡ Simplicity comes with lower performance
+    """)
     
 with st.expander("Slotted ALOHA"):
+    st.markdown("## Slotted ALOHA")
+    st.markdown("*(Cited from: Kurose & Ross, “Computer Networking: A Top-Down Approach”, 6th Edition)*")
+
     st.markdown("""
-    ## Slotted ALOHA  
-*(Cited from: Kurose & Ross, “Computer Networking: A Top-Down Approach”, 6th Edition)*
+        Slotted ALOHA is a random access protocol used in multiple access links.
+        The following assumptions are made:
 
-Slotted ALOHA is a random access protocol used in multiple access links.  
-The following assumptions are made:
+        * All frames are of equal size (L bits)
+        * Time is divided into slots of duration $L/R$ seconds (one frame time)
+        * Nodes begin transmission only at the start of a slot
+        * All nodes are synchronized to slot boundaries
+        * Any collision is detected before the slot ends
 
-- All frames are of equal size (L bits)
-- Time is divided into slots of duration L/R seconds (one frame time)
-- Nodes begin transmission only at the start of a slot
-- All nodes are synchronized to slot boundaries
-- Any collision is detected before the slot ends
+        ### Operation
+        * If a node has a new frame, it waits for the next slot and transmits
+        * If the transmission is successful (no collision), the frame is done
+        * If a collision occurs, the node retransmits in future slots with probability **p**
+            * Each collision-involved node retransmits independently using probability **p**
 
-### Operation
-- If a node has a new frame, it waits for the next slot and transmits
-- If the transmission is successful (no collision), the frame is done
-- If a collision occurs, the node retransmits in future slots with probability **p**
-  - Each collision-involved node retransmits independently using probability **p**
+        ### Notes
+        * Highly decentralized; nodes independently detect collisions and decide retransmissions
+        * Efficient when only one active node exists
+        * Inefficiency arises when:
+            * More than one node transmits (collision → wasted slot)
+            * No node transmits (empty slot)
 
-### Notes
-- Highly decentralized; nodes independently detect collisions and decide retransmissions
-- Efficient when only one active node exists
-- Inefficiency arises when:
-  - More than one node transmits (collision → wasted slot)
-  - No node transmits (empty slot)
+        ### Efficiency
+        Probability of a successful slot:
+    """)
 
-### Efficiency
-Probability of a successful slot:
-\[
-Np(1 - p)^{(N-1)}
-\]
+    # Use st.latex for the probability of a successful slot
+    st.latex(r'''
+        Np(1 - p)^{(N-1)}
+    ''')
 
-Maximum efficiency as \(N \to \infty\):
+    st.markdown("Maximum efficiency as $N \\to \infty$:")
 
-\[
-\frac{1}{e} \approx 0.37
-\]
-""")
+    # Use st.latex for the maximum efficiency
+    st.latex(r'''
+        \frac{1}{e} \approx 0.37
+    ''')
 st.markdown("""##### Citation:""")
 st.markdown("""All above material is taken and summarized from:  
 **James F. Kurose & Keith W. Ross — “Computer Networking: A Top-Down Approach”, Sixth Edition**, Pearson.
@@ -244,21 +248,41 @@ with tab1:
     st.markdown("""
     ### Research Phase
     
-    **Literature Review:**
-    - Studied MAC layer protocols from textbook
-    - Reviewed academic papers on CSMA/CD and ALOHA
-    - Analyzed real-world implementations in Ethernet
-    
-    **Protocol Analysis:**
-    - Identified key parameters affecting performance
-    - Studied collision handling mechanisms
-    - Analyzed throughput optimization strategies
-    
-    **Tools Selection:**
-    - Python for implementation flexibility
-    - Streamlit for interactive web interface
-    - NumPy for numerical computations
-    - Matplotlib for visualizations
+##### Literature Review
+
+- Studied MAC layer protocols including:
+  - **CSMA/CD** for wired Ethernet networks
+  - **CSMA/CA** for wireless medium access
+  - **Pure ALOHA** and **Slotted ALOHA** for random access communication
+- Reviewed academic papers focusing on:
+  - Collision detection efficiency in CSMA/CD
+  - Collision avoidance with RTS/CTS and ACK in CSMA/CA
+  - Probabilistic retransmission in ALOHA protocols
+- Analyzed real-world applications:
+  - Ethernet (CSMA/CD)
+  - Wi-Fi (CSMA/CA under IEEE 802.11)
+  - Satellite/RFID networks (ALOHA systems)
+
+##### Protocol Analysis
+
+- Key performance metrics studied:
+  - **Throughput**, **Delay**, **Collision Probability**, **Channel Utilization**
+- Collision handling strategies compared:
+  - **CSMA/CD** → Detects collisions & backs off
+  - **CSMA/CA** → Avoids collisions using backoff + control frames
+  - **ALOHA** → Random retransmissions using probability \( p \)
+- Protocol efficiencies evaluated:
+  - Slotted ALOHA: \( \frac{1}{e} \approx 0.37 \) (≈ 37%)
+  - Pure ALOHA: \( \frac{1}{2e} \approx 0.18 \) (≈ 18%)
+  - CSMA-based protocols perform significantly better under load
+
+
+##### Tools Selection
+
+- **Python** for simulation and probability modeling
+- **Streamlit** for an interactive and user-friendly interface
+- **NumPy** for computing slot-wise success/collision probabilities
+- **Matplotlib** for plotting throughput vs load graphs
     """)
 
 with tab2:
@@ -266,12 +290,16 @@ with tab2:
     ### Design Phase
     
     **Architecture:**
-    ```
-    Project Structure:
+    """)
+    
+    st.code("""
+Project Structure:
 ├── Home.py                      (Main page)
 ├── pages/
-│   ├── CSMA_CD.py               (CSMA/CD Simulator / Theory Page)
-│   ├── Slotted_Aloha.py         (Slotted ALOHA Simulator Page)
+│   ├── CSMA_CD.py               (CSMA/CD Simulator)
+│   ├── CSMA_CA.py               (CSMA/CA Simulator)
+│   ├── Pure_Aloha.py            (Pure ALOHA Simulator)
+│   ├── Slotted_Aloha.py         (Slotted ALOHA Simulator)
 │   ├── Learn.py                 (Educational Theory / Learning Content)
 │   ├── Help.py                  (User Instructions)
 │   ├── Download.py              (Download Results / Export Page)
@@ -281,18 +309,45 @@ with tab2:
 ├── LICENSE
 ├── README.md
 └── requirements.txt
-
-    ```
+    """, language="text")
     
+    st.markdown("""
     **Simulation Algorithm:**
-    1. Initialize nodes and parameters
-    2. For each time slot:
+    1. **Initialize Environment**
+       - Set number of nodes (N)
+       - Set transmission probability (p)
+       - Set simulation duration (time slots/units)
+       - Initialize data structures
+    
+    2. **Main Simulation Loop** - For each time slot/unit:
        - Determine which nodes want to transmit
-       - Apply protocol rules
+       - Apply protocol-specific rules (ALOHA/CSMA/CD/CA)
        - Detect collisions
-       - Record events
-    3. Calculate performance metrics
-    4. Generate visualizations
+       - Record events (Success/Collision/Idle)
+    
+    3. **Calculate Performance Metrics**
+       - Throughput (S)
+       - Offered Load (G)
+       - Success Rate
+       - Collision Rate
+       - Channel Utilization
+    
+    4. **Generate Visualizations**
+       - Timeline/Gantt charts
+       - Throughput vs Load graphs
+       - Distribution pie charts
+       - Time-series activity plots
+    
+    ---
+    
+    **Protocol Comparison:**
+    
+    | Protocol | Max Throughput | Optimal Load | Efficiency |
+    |----------|----------------|--------------|------------|
+    | Pure ALOHA | 0.184 (18.4%) | G = 0.5 | Low |
+    | Slotted ALOHA | 0.368 (36.8%) | G = 1.0 | Medium |
+    | CSMA/CD | 0.80-0.95 | Variable | High |
+    | CSMA/CA | 0.50-0.70 | Variable | Medium-High |
     """)
 
 with tab3:
@@ -305,33 +360,91 @@ with tab3:
        - Event-driven simulation loop
        - Node state management
        - Collision detection logic
-       - Backoff mechanism
+       - Backoff mechanism (exponential for CSMA/CD, random for CSMA/CA)
+       - Carrier sensing mechanism
+       - ACK/timeout handling
     
     2. **Visualization:**
        - Gantt charts for timeline
        - Bar charts for metrics comparison
        - Line graphs for throughput analysis
        - Pie charts for slot distribution
+       - Throughput vs Offered Load curves
     
     3. **User Interface:**
        - Parameter controls via sliders
        - Real-time simulation execution
        - Interactive data tables
        - CSV export functionality
+       - Protocol-specific parameter adjustment
+    
+    ---
     
     **Key Algorithms Implemented:**
-    ```python
-    # CSMA/CD Collision Detection
+    """)
+    
+    st.subheader("Pure ALOHA")
+    st.code("""
+# Pure ALOHA - Transmit anytime
+for each time_unit:
+    for each node:
+        if not transmitting and random() < probability:
+            start_transmission(duration)
+    
+    # Check for overlapping transmissions
+    if overlapping_transmissions > 1:
+        collision = True
+    """, language="python")
+    
+    st.subheader("Slotted ALOHA")
+    st.code("""
+# Slotted ALOHA - Transmit at slot boundaries
+for each slot:
+    transmitting_nodes = 0
+    for each node:
+        if random() < probability:
+            transmitting_nodes += 1
+    
     if transmitting_nodes > 1:
         collision = True
-        apply_exponential_backoff()
+    """, language="python")
     
-    # Slotted ALOHA Transmission
-    for each slot:
-        if random() < probability:
-            attempt_transmission()
-    ```
-    """)
+    st.subheader("CSMA/CD")
+    st.code("""
+# CSMA/CD - Carrier Sense + Collision Detection
+if channel_idle:
+    start_transmission()
+    
+    if collision_detected:
+        send_jam_signal()
+        backoff_time = random(0, 2^min(attempts, 10) - 1)
+        wait(backoff_time)
+        retry_transmission()
+    """, language="python")
+    
+    st.subheader("CSMA/CA")
+    st.code("""
+# CSMA/CA - Carrier Sense + Collision Avoidance
+wait_for_DIFS()
+
+if channel_idle:
+    backoff_counter = random(0, CW - 1)
+    
+    while backoff_counter > 0:
+        if channel_idle:
+            backoff_counter -= 1
+        else:
+            freeze_counter()
+    
+    send_packet()
+    
+    if ACK_received:
+        success = True
+        reset_CW()
+    else:
+        double_CW()
+        retry()
+    """, language="python")
 
 with tab4:
     st.markdown("""
