@@ -29,7 +29,6 @@ st.markdown("""
 
 st.divider()
 
-# Navigation Bar (from your code)
 col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 1])
 with col1:
     if st.button("Home", use_container_width=True):
@@ -44,38 +43,30 @@ with col4:
     if st.button("Learn", use_container_width=True):
         st.switch_page("pages/Learn.py")
 with col5:
-    # Set this as 'primary' to show it's the active page
-    if st.button("Developed by", use_container_width=True, type="primary"):
+    if st.button("Developed by", use_container_width=True):
         st.switch_page("pages/Developed_by.py")
 
 st.divider()
 
-# Header Section (from your code)
 st.markdown("""
 <div class="page-header">
     <h1>Developed By</h1>
 </div>
 """, unsafe_allow_html=True)
 
-# --- START: FIXED SECTION ---
 
-st.markdown("## 👥 Project Team Members")
+st.markdown("## Project Team Members")
 
 team_members = [
-    {"name": "Katyayni Aarya", "reg_no": "24BCE1543", "photo": "images/p1.jpg"},
-    {"name": "Suyesha Saha", "reg_no": "24BCE1962", "photo": "images/p2.jpg"}
+    {"name": "Katyayni Aarya", "reg_no": "24BCE1543", "photo": "images/me.png"},
+    {"name": "Suyesha Saha", "reg_no": "24BCE1962", "photo": "images/suyesha.jpg"}
 ]
 
-# Loop through each member and create a container with columns
 for member in team_members:
-    # Use a bordered container to create a "card" effect
     with st.container(border=True):
-        # Create columns: 1 part for image, 3 parts for text
         col1, col2 = st.columns([1, 3])
         
         with col1:
-            # FIX: Call st.image() directly
-            # Make sure the path 'images/p1.jpg' is correct!
             try:
                 st.image(member['photo'], width=150)
             except Exception as e:
@@ -83,23 +74,19 @@ for member in team_members:
                 st.caption("Please check the file path.")
 
         with col2:
-            # FIX: Use standard streamlit elements for text
             st.subheader(member['name'])
             st.markdown(f"**Registration No:** {member['reg_no']}")
     
-    st.write("") # Adds a little vertical space between members
-
+    st.write("") 
 st.divider()
 
-# --- ADDED: GUIDE SECTION ---
 
-st.markdown("## 🧑‍🏫 Project Guide")
+st.markdown("## Project Guide")
 
-# Update this with your guide's information
 guide_info = {
-    "name": "Dr. Guide Name",
+    "name": "Dr. Swaminathan Annadurai",
     "title": "Professor, School of Computer Science",
-    "photo": "images/p2.jpg" # Make sure this path is correct
+    "photo": "images/guide.jpg"
 }
 
 with st.container(border=True):

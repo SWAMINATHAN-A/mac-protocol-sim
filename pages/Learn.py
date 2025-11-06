@@ -66,7 +66,7 @@ st.divider()
 # Header
 st.markdown("""
 <div class="page-header">
-    <h1>📚 Learn About Network Protocols</h1>
+    <h1>Learn About Network Protocols</h1>
     <p style="font-size: 1.2rem; margin-top: 0.5rem;">
         Educational Materials and Resources
     </p>
@@ -74,89 +74,169 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Main Content Sections
-st.markdown("## 📖 Project Materials from Prescribed Textbook")
+st.markdown("## Project Materials from Prescribed Textbook")
 
-st.markdown("""
-<div class="learn-card">
-    <h3>📘 Reference Textbook</h3>
-    <p><strong>Book:</strong> Computer Networks - A Systems Approach</p>
-    <p><strong>Authors:</strong> Larry L. Peterson & Bruce S. Davie</p>
-    <p><strong>Relevant Chapters:</strong></p>
-    <ul>
-        <li><strong>Chapter 2:</strong> Direct Links - Medium Access Control</li>
-        <li><strong>Section 2.6:</strong> Ethernet and Multiple Access Networks</li>
-        <li><strong>Section 2.6.1:</strong> Physical Properties</li>
-        <li><strong>Section 2.6.2:</strong> Access Protocol (CSMA/CD)</li>
-    </ul>
-</div>
-""", unsafe_allow_html=True)
-
-with st.expander("📄 View Chapter Summary - CSMA/CD"):
+with st.expander("CSMA/CA"):
     st.markdown("""
-    ### CSMA/CD (Carrier Sense Multiple Access with Collision Detection)
-    
-    **Key Concepts:**
-    
-    1. **Carrier Sense**: Before transmitting, a node listens to check if the channel is idle
-    2. **Multiple Access**: Multiple nodes share the same broadcast medium
-    3. **Collision Detection**: Nodes detect when their transmission collides with another
-    
-    **Algorithm Steps:**
-    1. Listen to the channel
-    2. If idle, begin transmission
-    3. If busy, wait and retry
-    4. Monitor for collisions during transmission
-    5. If collision detected, send jam signal
-    6. Back off using exponential backoff algorithm
-    7. Retry transmission
-    
-    **Variants:**
-    - **1-Persistent**: Transmit immediately when idle (probability = 1)
-    - **Non-Persistent**: Wait random time before checking again
-    - **p-Persistent**: Transmit with probability p when idle
+    ## Carrier Sense Multiple Access (CSMA)  
+*(Cited from: Kurose & Ross, “Computer Networking: A Top-Down Approach”, 6th Edition)*
+
+CSMA improves upon ALOHA by **listening before transmitting**.
+
+### Key Idea — Carrier Sensing
+A node checks whether the channel is idle before sending.
+
+- If **channel is idle** → transmit
+- If **channel is busy** → wait until idle
+
+Still, **collisions can occur** due to **propagation delay**:
+- A node may **not detect** another transmission already started far away
+- Two nodes may sense idle ⇒ transmit ⇒ collision occurs
+
+➡ CSMA reduces collisions compared to ALOHA but cannot eliminate them completely.
     """)
 
-with st.expander("📄 View Chapter Summary - Slotted ALOHA"):
+with st.expander("CSMA/CD"):
     st.markdown("""
-    ### Slotted ALOHA Protocol
-    
-    **Key Concepts:**
-    
-    1. **Time Slots**: Time is divided into discrete, equal-length slots
-    2. **Synchronization**: All nodes are synchronized to slot boundaries
-    3. **Random Access**: Nodes transmit at the beginning of a slot with probability p
-    
-    **Algorithm Steps:**
-    1. Wait for the beginning of the next time slot
-    2. Transmit packet with probability p
-    3. If collision occurs, wait for acknowledgment timeout
-    4. Retry in a future slot (randomly selected)
-    
-    **Performance:**
-    - Maximum throughput: S = 1/e ≈ 0.368 (36.8%)
-    - Achieved when offered load G = 1
-    - Formula: S = G × e^(-G)
-    
-    **Advantages:**
-    - Simple implementation
-    - No carrier sensing required
-    - Works well for low traffic
-    
-    **Disadvantages:**
-    - Lower maximum throughput compared to CSMA
-    - Requires synchronization
+    ## Carrier Sense Multiple Access with Collision Detection (CSMA/CD)  
+*(Cited from: Kurose & Ross, “Computer Networking: A Top-Down Approach”, 6th Edition)*
+
+CSMA/CD adds **collision detection** to CSMA.
+
+A transmitting node **listens to the channel**:
+- If it detects another transmission interfering → **abort immediately**
+- **Do not send the entire corrupted frame**
+- Then wait a **random backoff time** before retrying
+
+---
+
+### CSMA/CD Algorithm (Adapter Behavior)
+1. Get a frame ready for transmission
+2. Sense channel
+   - If idle → start sending
+   - If busy → wait until idle
+3. While sending, **listen** for collision
+4. If **no collision** → success ✅
+5. If **collision detected** → stop + backoff → retry later
+
+---
+
+### Binary Exponential Backoff
+If a frame has suffered **n collisions**:
+
+\[
+K \in \{0, 1, 2, \ldots, 2^n - 1\}
+\]
+
+Wait time:
+
+\[
+\text{Backoff} = K \times 512 \text{ bit times}
+\]
+
+- Small wait when few collisions
+- Longer wait as collisions increase
+
+---
+
+### Efficiency Approximation
+
+\[
+\text{Efficiency} \approx \frac{1}{1 + 5 \cdot (d_{prop} / d_{trans})}
+\]
+
+Where:
+- \(d_{prop}\) = propagation delay
+- \(d_{trans}\) = frame transmission time
+
+✅ Efficiency increases when:
+- Propagation delay is small
+- Frame size is large
     """)
 
+with st.expander("Pure ALOHA"):
+    st.markdown("""
+    ## Pure (Unslotted) ALOHA  
+*(Cited from: Kurose & Ross, “Computer Networking: A Top-Down Approach”, 6th Edition)*
+
+Pure ALOHA does not require synchronization.
+
+### Operation
+- Whenever a frame arrives for transmission, the node sends it immediately
+- If collision occurs:
+  - After completing the transmission, the node retransmits with probability **p**
+  - It may wait idle for one frame-time before another attempt
+
+### Vulnerability Period
+A collision can occur if any other node transmits within:
+
+\[
+\text{vulnerability window} = 2 \text{ frame times}
+\]
+
+Thus, probability of success:
+
+\[
+p(1 - p)^{2(N-1)}
+\]
+
+### Maximum Efficiency
+
+\[
+\frac{1}{2e} \approx 0.18
+\]
+
+➡ Only **18%** of slots are successful  
+➡ Exactly **half** the efficiency of Slotted ALOHA  
+➡ Simplicity comes with lower performance
+""")
+    
+with st.expander("Slotted ALOHA"):
+    st.markdown("""
+    ## Slotted ALOHA  
+*(Cited from: Kurose & Ross, “Computer Networking: A Top-Down Approach”, 6th Edition)*
+
+Slotted ALOHA is a random access protocol used in multiple access links.  
+The following assumptions are made:
+
+- All frames are of equal size (L bits)
+- Time is divided into slots of duration L/R seconds (one frame time)
+- Nodes begin transmission only at the start of a slot
+- All nodes are synchronized to slot boundaries
+- Any collision is detected before the slot ends
+
+### Operation
+- If a node has a new frame, it waits for the next slot and transmits
+- If the transmission is successful (no collision), the frame is done
+- If a collision occurs, the node retransmits in future slots with probability **p**
+  - Each collision-involved node retransmits independently using probability **p**
+
+### Notes
+- Highly decentralized; nodes independently detect collisions and decide retransmissions
+- Efficient when only one active node exists
+- Inefficiency arises when:
+  - More than one node transmits (collision → wasted slot)
+  - No node transmits (empty slot)
+
+### Efficiency
+Probability of a successful slot:
+\[
+Np(1 - p)^{(N-1)}
+\]
+
+Maximum efficiency as \(N \to \infty\):
+
+\[
+\frac{1}{e} \approx 0.37
+\]
+""")
+st.markdown("""##### Citation:""")
+st.markdown("""All above material is taken and summarized from:  
+**James F. Kurose & Keith W. Ross — “Computer Networking: A Top-Down Approach”, Sixth Edition**, Pearson.
+""")
 st.divider()
 
-st.markdown("## 🎓 How We Built This Project")
-
-st.markdown("""
-<div class="learn-card">
-    <h3>🔧 Project Development Process</h3>
-    <p>This simulator was built following a systematic approach:</p>
-</div>
-""", unsafe_allow_html=True)
+st.markdown("## How We Built This Project")
 
 tab1, tab2, tab3, tab4 = st.tabs(["1. Research", "2. Design", "3. Implementation", "4. Testing"])
 
@@ -188,14 +268,20 @@ with tab2:
     **Architecture:**
     ```
     Project Structure:
-    ├── Home.py (Main page)
-    ├── pages/
-    │   ├── CSMA_CD.py (CSMA/CD Simulator)
-    │   ├── Slotted_ALOHA.py (ALOHA Simulator)
-    │   ├── Learn.py (Educational content)
-    │   ├── Help.py (User guide)
-    │   ├── Download.py (Export functionality)
-    │   └── Developed_by.py (Team info)
+├── Home.py                      (Main page)
+├── pages/
+│   ├── CSMA_CD.py               (CSMA/CD Simulator / Theory Page)
+│   ├── Slotted_Aloha.py         (Slotted ALOHA Simulator Page)
+│   ├── Learn.py                 (Educational Theory / Learning Content)
+│   ├── Help.py                  (User Instructions)
+│   ├── Download.py              (Download Results / Export Page)
+│   └── Developed_by.py          (Developer / Team Info Page)
+├── images/                      (UI Images / Graphs / Icons)
+├── assets/                      (Stylesheets / Additional Resources)
+├── LICENSE
+├── README.md
+└── requirements.txt
+
     ```
     
     **Simulation Algorithm:**
@@ -276,144 +362,60 @@ with tab4:
 
 st.divider()
 
-st.markdown("## 🎬 Video Demonstrations")
+st.markdown("## Video Demonstrations")
 
-st.markdown("""
-<div class="learn-card">
-    <h3>📺 Animated Video Explaining Project Topics</h3>
-    <p>Watch these videos to understand the protocols better:</p>
-</div>
-""", unsafe_allow_html=True)
+def embed_youtube(url, width=350, height=200):
+    st.markdown(
+        f"""
+        <iframe width="{width}" height="{height}" 
+        src="{url.replace("watch?v=", "embed/")}" 
+        frameborder="0" allowfullscreen></iframe>
+        """,
+        unsafe_allow_html=True,
+    )
+st.subheader(" ")
+st.subheader("CSMA/CD & CSMA/CA")
 
-col_v1, col_v2 = st.columns(2)
+col1, col2 = st.columns(2)
+with col1:
+    embed_youtube("https://www.youtube.com/watch?v=XrimgDtk34s")
+    embed_youtube("https://www.youtube.com/watch?v=iKn0GzF5-IU")
+with col2:
+    embed_youtube("https://www.youtube.com/watch?v=IAKncL67Pp4")
+    embed_youtube("https://www.youtube.com/watch?v=nyYr3cR5BTw")
+st.subheader(" ")    
 
-with col_v1:
-    st.markdown("""
-    <div class="video-container">
-        <h4>🎥 CSMA/CD Protocol Explained</h4>
-        <p>Duration: 10 minutes</p>
-        <p>Topics covered:</p>
-        <ul style="text-align: left;">
-            <li>How carrier sensing works</li>
-            <li>Collision detection mechanism</li>
-            <li>Exponential backoff algorithm</li>
-            <li>Protocol variants comparison</li>
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    video_url_1 = st.text_input("Enter YouTube URL for CSMA/CD video:", key="video1")
-    if video_url_1:
-        st.video(video_url_1)
+st.subheader("Pure ALOHA & Slotted ALOHA")
 
-with col_v2:
-    st.markdown("""
-    <div class="video-container">
-        <h4>🎥 Slotted ALOHA Protocol Explained</h4>
-        <p>Duration: 8 minutes</p>
-        <p>Topics covered:</p>
-        <ul style="text-align: left;">
-            <li>Time slot synchronization</li>
-            <li>Random access mechanism</li>
-            <li>Throughput optimization</li>
-            <li>Performance analysis</li>
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    video_url_2 = st.text_input("Enter YouTube URL for ALOHA video:", key="video2")
-    if video_url_2:
-        st.video(video_url_2)
+col3, col4 = st.columns(2)
+with col3:
+    embed_youtube("https://www.youtube.com/watch?v=Z9kuc4tK1HE")
+    embed_youtube("https://www.youtube.com/watch?v=fgrYDvP_Nyk")
+with col4:
+    embed_youtube("https://www.youtube.com/watch?v=p2caqyspMk8")
+    embed_youtube("https://www.youtube.com/watch?v=hgmI1pOdfzI")
+
 
 st.divider()
 
-st.markdown("## 📚 Additional References")
+st.markdown("## References")
 
 st.markdown("""
-<div class="learn-card">
-    <h3>📖 Recommended Reading Materials</h3>
-</div>
-""", unsafe_allow_html=True)
+    **Textbook**
+- Kurose, J. F., & Ross, K. W. (2013). *Computer Networking: A Top-Down Approach* (6th ed.). Pearson.
 
-col_r1, col_r2 = st.columns(2)
+**Research & Learning Videos**
+- PowerCert Animated Videos. (2019). *CSMA/CD explained*. YouTube. https://www.youtube.com/watch?v=XrimgDtk34s
+- PowerCert Animated Videos. (2019). *CSMA/CD – How it works*. YouTube. https://www.youtube.com/watch?v=IAKncL67Pp4
+- PowerCert Animated Videos. (2019). *CSMA/CA explained*. YouTube. https://www.youtube.com/watch?v=iKn0GzF5-IU
+- Technical Gurukul. (2020). *CSMA vs CSMA/CD*. YouTube. https://www.youtube.com/watch?v=nyYr3cR5BTw
+- Neso Academy. (2020). *Pure ALOHA*. YouTube. https://www.youtube.com/watch?v=Z9kuc4tK1HE
+- PowerCert Animated Videos. (2020). *Slotted ALOHA*. YouTube. https://www.youtube.com/watch?v=p2caqyspMk8
+- NPTEL. (2018). *ALOHA protocol basics*. YouTube. https://www.youtube.com/watch?v=fgrYDvP_Nyk
 
-with col_r1:
-    st.markdown("""
-    ### Textbooks
-    1. **Computer Networks** - Andrew S. Tanenbaum
-       - Chapter 4: The Medium Access Control Sublayer
-    
-    2. **Data Communications and Networking** - Behrouz A. Forouzan
-       - Chapter 12: Multiple Access
-    
-    3. **Computer Networking: A Top-Down Approach** - Kurose & Ross
-       - Chapter 6: The Link Layer
+**Software / Tools**
+- Streamlit. (2024). *Streamlit documentation*. https://streamlit.io
+- Python Software Foundation. (2024). *Python Language Reference*. https://www.python.org
     """)
 
-with col_r2:
-    st.markdown("""
-    ### Online Resources
-    1. **IEEE 802.3 Standard** (Ethernet)
-       - Official CSMA/CD specification
-    
-    2. **RFC 894** - A Standard for the Transmission of IP Datagrams over Ethernet
-    
-    3. **Academic Papers:**
-       - "Packet Communication" - Norman Abramson (ALOHA)
-       - "Ethernet: Distributed Packet Switching" - Metcalfe & Boggs
-    """)
 
-st.divider()
-
-st.markdown("## 💡 Key Takeaways")
-
-col_k1, col_k2, col_k3 = st.columns(3)
-
-with col_k1:
-    st.info("""
-    **CSMA/CD**
-    
-    ✅ Best for wired networks
-    
-    ✅ High efficiency (50-90%)
-    
-    ✅ Requires collision detection
-    
-    ✅ Used in traditional Ethernet
-    """)
-
-with col_k2:
-    st.success("""
-    **Slotted ALOHA**
-    
-    ✅ Simple implementation
-    
-    ✅ Max throughput: 36.8%
-    
-    ✅ No carrier sensing needed
-    
-    ✅ Good for low traffic
-    """)
-
-with col_k3:
-    st.warning("""
-    **Comparison**
-    
-    📊 CSMA/CD: Higher throughput
-    
-    📊 ALOHA: Simpler protocol
-    
-    📊 Trade-off: Complexity vs. Performance
-    
-    📊 Choose based on use case
-    """)
-
-# Footer
-st.divider()
-st.markdown("""
-<div style="text-align: center;">
-    <p style="font-size: 0.9rem; color: #666;">
-        Network Protocol Simulator | Learn More About MAC Protocols<br>
-    </p>
-</div>
-""", unsafe_allow_html=True)
