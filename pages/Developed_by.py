@@ -55,33 +55,12 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-st.markdown("## Project Team Members")
+st.markdown("## Project Team Members and Guide")
 
 team_members = [
     {"name": "Katyayni Aarya", "reg_no": "24BCE1543", "photo": "images/me.png"},
     {"name": "Suyesha Saha", "reg_no": "24BCE1962", "photo": "images/suyesha.jpg"}
 ]
-
-for member in team_members:
-    with st.container(border=True):
-        col1, col2 = st.columns([1, 3])
-        
-        with col1:
-            try:
-                st.image(member['photo'], width=150)
-            except Exception as e:
-                st.error(f"Could not load image: {member['photo']}")
-                st.caption("Please check the file path.")
-
-        with col2:
-            st.subheader(member['name'])
-            st.markdown(f"**Registration No:** {member['reg_no']}")
-    
-    st.write("") 
-st.divider()
-
-
-st.markdown("## Project Guide")
 
 guide_info = {
     "name": "Dr. Swaminathan Annadurai",
@@ -89,16 +68,40 @@ guide_info = {
     "photo": "images/guide.jpg"
 }
 
-with st.container(border=True):
-    col1, col2 = st.columns([1, 3])
-    
-    with col1:
-        try:
-            st.image(guide_info['photo'], width=150)
-        except Exception as e:
-            st.error(f"Could not load image: {guide_info['photo']}")
-            st.caption("Please check the file path.")
-    
-    with col2:
-        st.subheader(guide_info['name'])
-        st.markdown(f"**{guide_info['title']}**")
+# Use two main columns: left = team members (stacked), right = project guide
+left_col, right_col = st.columns([1.5, 2])
+
+with left_col:
+    st.markdown("### Team Members")
+    # Render each team member in a compact horizontal row
+    for idx, member in enumerate(team_members):
+        with st.container():
+            mcol1, mcol2 = st.columns([1, 4])
+            with mcol1:
+                try:
+                    # slightly smaller images to reduce wasted space
+                    st.image(member['photo'], width=110)
+                except Exception:
+                    st.error(f"Could not load image: {member['photo']}")
+                    st.caption("Please check the file path.")
+            with mcol2:
+                st.subheader(member['name'])
+                st.markdown(f"**Registration No:** {member['reg_no']}")
+        # subtle separator between members
+        if idx < len(team_members) - 1:
+            st.markdown("---")
+
+with right_col:
+    st.markdown("### Project Guide")
+    with st.container():
+        gcol1, gcol2 = st.columns([1, 3])
+        with gcol1:
+            try:
+                st.image(guide_info['photo'], width=150)
+            except Exception:
+                st.error(f"Could not load image: {guide_info['photo']}")
+                st.caption("Please check the file path.")
+        with gcol2:
+            st.subheader(guide_info['name'])
+            st.markdown(f"**{guide_info['title']}**")
+            st.markdown("---")
