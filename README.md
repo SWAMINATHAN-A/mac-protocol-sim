@@ -225,5 +225,4 @@ This simulator helps you:
 * **Katyayni Aarya** — [@razbearr](https://github.com/razbearr)
 * **Suyesha Saha** — [@suyu101](https://github.com/suyu101)
 
-*© 2025 Katyayni Aarya and Suyesha Saha. All rights reserved.*
 
